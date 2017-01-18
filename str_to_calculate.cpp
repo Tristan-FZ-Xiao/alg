@@ -12,124 +12,93 @@
  *	3. max()
  */
 
-char *get_num(char *input, int *num)
-{
-	int i = 0;
-	*operand = 0;
+ /*	The solution: use stack as the oprand sharper.
+  *	input: 1 + 2 * 3 - 4
+  *	1) output: 1
+  *	2) stack_push(+)
+  *	3) output: 1 2
+  *	4) stack_push(*): + *
+  *	5) output 1 2 3
+  *	6) compare: * -, pop(*), output 1 2 3 * => 1 6, stack_push(-): + -
+  *	7) pop(-): output: 1 6 4 - => 1 2
+  *	8) pop(+): output: 1 2 + => 3
+  */
+#define MAX_TOP		128
+static int top = 0;
+static int base = 0;
+static char stack[MAX_TOP] = {0};
 
-	while (*(input + i) > '0' && *(input + i) < '9') {
-		*operand += *operand * 10 + *(input + i);	
-		i ++;
+int stack_push(char ops)
+{
+	if (MAX_TOP < top) {
+		return -1;
 	}
-	return (input + i);
+
+	stack[top ++] = ops;
+	return 0;
 }
 
-/* get min() and max() */
-char *get_bs(char *input int *num)
+int stack_pop(char *ops)
 {
-	int i = 0;
-	int num_a, num_b;
-	flag = 0;
+	if (top < 0) {
+		return -1;
+	}
 	
-	if (input == strstr(input, "min")) {
-		flag = 1;
-	}
-	else if (input == strstr(input, "max")) {
-		flag = 2;
-	}
-
-	input = get_num(input + 4, &num_a);
-	/* jump space and , */
-	while (*(input + i) < '0' || *(input + i) > '9') {
-		i ++;
-	}
-
-	input = get_num(input + i, &num_b);
-
-	if ((num_a > num_b && flag == 1) || (num_a < num_b && flag == 2)) {
-		*num = num_b;
-	}
-	else if ((num_a < num_b && flag == 1) || (num_a > num_b && flag == 2)) {
-		*num = num_a;
-	}
-	return input;
+	*ops = stack[--top];
+	stack[top] = '\0';
+	return 0;
 }
 
-struct ops {
-	int num;
-	int type;
-};
+#include <string.h>
+#include <stdlib.h>
 
-struct ops calulate_stack[1024] = {};
-int stack_top;
-
-enum OPS_TYPE {
-	OPS_NUM = 1,
-	OPS_OPERAND
-};
-int stack_push(int num, int type)
+int sharp_string(char *input)
 {
-	if (stack_top < 1024) {
-		calulate_stack[stack_top].num = num;
-		calulate_stack[stack_top].type = type; 
-		stack_top ++;
-		return 0;
-	}
-	return -1;
-}
+	int len = 0;
+	char *output = NULL;
+	int i = 0;
 
-int stack_pop(int *num, int *type)
-{
-	if (stack_top >= 0) {
-		*num = calulate_stack[stack_top].num;
-		*type = calulate_stack[stack_top].type;
-		stack_top --;
-		return 0;
-	}
-	return -1;
-}
+	if (input) {
+		len = strlen(input);
+		output = (char *)malloc(len * sizeof(char*));
+		memset(output, 0, len);
 
-int str_to_calculate(char *ptr)
-{
-	int num  = 0;
-	char op = 0;
+		for (; i < len; i ++) {
+			char c = *(input + i);
 
-	while (*ptr != 0) {
-		if (*ptr > '0' && *ptr < '9') {
-			ptr = get_num(ptr, &num);
-		}
-		else if (*ptr == 'm') {
-			ptr = get_bs(ptr, &num);
-		}
-		else {
-			switch (*ptr) {
-			case '(':
-			case ')':
-				break;
-			case '*'
-			case '/'
-				break;
-			case '+'
-			case '-'
+			if (c > '0' && c < '9') {
+				*(output + i) = *(input + i);
 			}
-			if (*ptr == '(') {
-				stack_push('(', OPS_OPERAND);
+			else if (c == 'm') {
 			}
-			else if (*ptr)
-			op = *ptr;
+			else {
+			}
 		}
-
-		else if (*ptr == '(') {
-			stack_push('(', OPS_OPERAND);
-
-		}
-		else if (*ptr == '*' || *ptr == '/') {
-			op = *ptr; 
-		}
-	}
+		return 0;
+	}	
+	return -1;
 }
 
 int main(int argc, char **argv)
 {
-	
+	int i = 0;
+
+	stack_push('t');
+	stack_push('r');
+	stack_push('i');
+	stack_push('s');
+	stack_push('t');
+	stack_push('a');
+	stack_push('n');
+
+	for (; i < MAX_TOP; i ++) {
+		char c = '\0';
+
+		if (stack_pop(&c) != 0) {
+			break;
+		}
+		printf("%c", c);
+	}
+
+	return 0;
 }
