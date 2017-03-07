@@ -13,12 +13,18 @@ int en_queue(int x)
 	
 	if (!q)
 		return -1;
-	p->data = x;
-	p->next = NULL;
-	
+	q->data = x;
+	q->next = NULL;
+	p = tail;
+
 	do {
-		p = tail;
+		/* get tail entry itself to avoid infinited-loop when other thread
+		 * suspend or dead between CAS */
+		while (p->next != NULL)
+			p = p->next;
 	} while (CAS(p->next, NULL, q) != TRUE);
+	
+	/* Thread may suspend point */
 	
 	CAS(tail, p, q);
 	return 0;
