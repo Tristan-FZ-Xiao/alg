@@ -19,6 +19,7 @@ int partition(int a[], int left, int right)
 		/* the Exquisite of partition */
 		if (a[i] <= r) {
 			j ++;
+			//SWAP(a[i], a[j]);
 			tmp = a[i];
 			a[i] = a[j];
 			a[j] = tmp;
@@ -43,6 +44,7 @@ void quick_sort(int a[], int left, int right)
 int main(int argc, char **argv)
 {
 	int a[] = { 12, 32, 1, 4, 6, 21 };
+
 	printf("hello Quick-sort\n");
 	quick_sort(a, 0, 5);
 	output_result(a, 6);
